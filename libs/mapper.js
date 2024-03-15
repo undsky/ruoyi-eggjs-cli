@@ -160,8 +160,11 @@ function loadMapper(mapper) {
 }
 
 async function genMapper(mapper, targetFile) {
-  const dbName = path.relative(servicesPath, path.dirname(targetFile));
-  const pluginName = path.parse(dbName).dir;
+  const mapperPath = path.parse(
+    path.relative(servicesPath, path.dirname(targetFile))
+  );
+  const pluginName = mapperPath.dir;
+  const dbName = mapperPath.base;
   const $ = loadMapper(mapper);
   let namespace = $("mapper").attr("namespace");
   if (!namespace) return;
