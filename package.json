@@ -1,9 +1,17 @@
 {
-  "name": "egg-psyduck-cli",
-  "version": "1.0.2",
+  "name": "ruoyi-eggjs-cli",
+  "version": "1.1.0",
   "description": "",
   "author": "姜彦汐 <https://www.undsky.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/undsky/ruoyi-eggjs-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/undsky/ruoyi-eggjs-cli/issues"
+  },
+  "homepage": "https://github.com/undsky/ruoyi-eggjs-cli#readme",
   "main": "index.js",
   "bin": {
     "psy": "index.js"

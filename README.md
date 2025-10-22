@@ -1,1 +1,1 @@
-# egg-psyduck-cli
+# ruoyi-eggjs-cli
