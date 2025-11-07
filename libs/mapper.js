@@ -98,9 +98,9 @@ function mapperId(mapperPath) {
   $("mapper")
     .children()
     .each((idx, el) => {
-      ids += el.attribs.id;
+      ids += `${el.name}${el.attribs.id}`;
     });
-  return Array.from(ids).sort().join("");
+  return ids;
 }
 
 function genMapperMap(dir, mapperMap) {
