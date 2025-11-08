@@ -1,6 +1,6 @@
 {
   "name": "ruoyi-eggjs-cli",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "",
   "author": "姜彦汐 <https://www.undsky.com>",
   "license": "MIT",
@@ -14,7 +14,7 @@
   "homepage": "https://github.com/undsky/ruoyi-eggjs-cli#readme",
   "main": "index.js",
   "bin": {
-    "psy": "index.js"
+    "rec": "index.js"
   },
   "dependencies": {
     "chalk": "^4.1.2",
