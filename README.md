@@ -13,6 +13,7 @@
 - ✅ 自动生成符合命名规范的方法（驼峰命名）
 - ✅ 智能识别 SQL 类型（select、insert、update、delete）
 - ✅ 生成进度可视化显示
+- ✅ 内网穿透功能（FRP）
 
 ## 安装
 
@@ -75,6 +76,35 @@ $ psy mapper -w false
 # 组合使用
 $ psy mapper /my/project -m mapper -d mysql -w true
 ```
+
+### FRP 内网穿透（内置版本 v0.45.0）
+
+使用 FRP 功能可以将本地服务暴露到公网，方便开发和测试：
+
+```bash
+# 完整示例（所有参数必填）
+$ rec frp 127.0.0.1:7001 -saddr frp.example.com -sport 39998 -auth your_token
+
+# 指定本地端口（IP 默认为 127.0.0.1）
+$ rec frp 7001 -saddr frp.example.com -sport 39998 -auth your_token
+```
+
+**参数说明：**
+
+| 参数 | 说明 | 是否必填 |
+| --- | --- | --- |
+| `localURL` | 本地服务地址，格式：`IP:PORT` 或 `PORT` | 必填 |
+| `-saddr, --serverAddr` | FRP 服务端地址 | 必填 |
+| `-sport, --serverPort` | FRP 服务端端口 | 必填 |
+| `-auth, --authToken` | 身份验证令牌 | 必填 |
+| `-cdomain, --customDomains` | 自定义域名 | 可选 |
+
+**使用场景：**
+
+- 本地开发时，需要让远程客户端访问本地服务
+- 微信小程序开发，需要 HTTPS 域名进行调试
+- 临时分享本地服务给团队成员测试
+- 内网穿透，访问内网服务
 
 ## 工作原理
 
