@@ -59,6 +59,16 @@ program
         awaitWriteFinish: true,
       });
       watcher
+        .on("add", async (filePath) => {
+          // 跳过初始扫描，只处理监听后新增的文件
+          if (mapperMap.has(filePath)) return;
+
+          console.log(chalk.green(`${filePath} has been added`));
+          const curId = mapperId(filePath);
+          mapperMap.set(filePath, curId);
+          mkdir(filePath);
+          await genMapper(filePath, genTargetFile(filePath));
+        })
         .on("change", async (filePath) => {
           const id = mapperMap.get(filePath);
           const curId = mapperId(filePath);
