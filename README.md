@@ -1,29 +1,21 @@
 # ruoyi-eggjs-cli
 
-> Egg.js MyBatis 风格的 Service 代码生成器
+> Egg.js MyBatis 风格的 Service 代码生成器，附带内网穿透功能
 
 基于 MyBatis XML 映射文件自动生成 Egg.js Service 层代码，减少重复劳动，提高开发效率。
 
 ## 特性
 
 - ✅ 自动扫描 XML Mapper 文件并生成对应的 Service 代码
-- ✅ 支持多数据库类型（MySQL、SQLite 等）
+- ✅ 支持多数据库类型（MySQL、SQLite、PostgreSQL 等）
 - ✅ 支持多数据源配置
 - ✅ 实时监听模式，XML 文件变化时自动重新生成
 - ✅ 自动生成符合命名规范的方法（驼峰命名）
-- ✅ 智能识别 SQL 类型（select、insert、update、delete）
+- ✅ 智能识别 SQL 类型（select、selects、insert、update、delete）
 - ✅ 生成进度可视化显示
-- ✅ 内网穿透功能（FRP）
+- ✅ 附带内网穿透功能（FRP）
 
 ## 安装
-
-### 全局安装（推荐）
-
-```bash
-$ npm install -g ruoyi-eggjs-cli
-```
-
-### 本地安装
 
 ```bash
 $ npm install ruoyi-eggjs-cli --save-dev
@@ -76,35 +68,6 @@ $ psy mapper -w false
 # 组合使用
 $ psy mapper /my/project -m mapper -d mysql -w true
 ```
-
-### FRP 内网穿透（内置版本 v0.45.0）
-
-使用 FRP 功能可以将本地服务暴露到公网，方便开发和测试：
-
-```bash
-# 完整示例（所有参数必填）
-$ rec frp 127.0.0.1:7001 -saddr frp.example.com -sport 39998 -auth your_token
-
-# 指定本地端口（IP 默认为 127.0.0.1）
-$ rec frp 7001 -saddr frp.example.com -sport 39998 -auth your_token
-```
-
-**参数说明：**
-
-| 参数 | 说明 | 是否必填 |
-| --- | --- | --- |
-| `localURL` | 本地服务地址，格式：`IP:PORT` 或 `PORT` | 必填 |
-| `-saddr, --serverAddr` | FRP 服务端地址 | 必填 |
-| `-sport, --serverPort` | FRP 服务端端口 | 必填 |
-| `-auth, --authToken` | 身份验证令牌 | 必填 |
-| `-cdomain, --customDomains` | 自定义域名 | 可选 |
-
-**使用场景：**
-
-- 本地开发时，需要让远程客户端访问本地服务
-- 微信小程序开发，需要 HTTPS 域名进行调试
-- 临时分享本地服务给团队成员测试
-- 内网穿透，访问内网服务
 
 ## 工作原理
 
@@ -378,34 +341,13 @@ db() {
 }
 ```
 
-### SQLite 示例
-
-```bash
-# 输入
-./mapper/
-  └── sqlite/
-      └── local/
-          └── CacheMapper.xml
-
-# 输出
-./app/service/db/
-  └── sqlite/
-      └── local/
-          └── CacheMapper.js
-
-# Service 中的 db() 方法
-db() {
-    return this.app.sqlite.get('local');
-}
-```
-
 ## SQL 类型映射
 
 CLI 会根据 XML 中的标签类型，自动调用对应的数据库方法：
 
 | XML 标签 | 数据库方法 | 返回值 |
 | --- | --- | --- |
-| `<select>` | `.select()` | 单条记录或 null |
+| `<select>` | `.select()` | 单条记录或 null，多条记录时返回记录数组 |
 | `<selects>` | `.selects()` | 记录数组 |
 | `<insert>` | `.insert()` | 插入的 ID |
 | `<update>` | `.update()` | 影响的行数 |
@@ -448,7 +390,7 @@ exports.mybatis = {
 
 ### 2. 数据库插件
 
-如 ruoyi-eggjs-mysql、ruoyi-eggjs-sqlite 等：
+如 ruoyi-eggjs-mysql、ruoyi-eggjs-sqlite、ruoyi-eggjs-pgsql 等：
 
 ```js
 // config/plugin.js
@@ -460,6 +402,11 @@ exports.mysql = {
 exports.sqlite = {
   enable: true,
   package: 'ruoyi-eggjs-sqlite',
+};
+
+exports.pgsql = {
+  enable: true,
+  package: 'ruoyi-eggjs-pgsql',
 };
 ```
 
@@ -501,6 +448,119 @@ exports.sqlite = {
 
 运行 `npm run dev` 即可同时启动 Mapper 生成器和应用调试。
 
+
+
+## FRP 内网穿透
+
+使用 FRP（内置版本 v0.45.0） 功能可以将本地服务暴露到公网，方便开发和测试：
+
+```bash
+# 完整示例（所有参数必填）
+$ rec frp 127.0.0.1:7001 -saddr frp.example.com -sport 39998 -auth your_token
+
+# 指定本地端口（IP 默认为 127.0.0.1）
+$ rec frp 7001 -saddr frp.example.com -sport 39998 -auth your_token
+```
+
+**参数说明：**
+
+| 参数 | 说明 | 是否必填 |
+| --- | --- | --- |
+| `localURL` | 本地服务地址，格式：`IP:PORT` 或 `PORT` | 必填 |
+| `-saddr, --serverAddr` | FRP 服务端地址 | 必填 |
+| `-sport, --serverPort` | FRP 服务端端口 | 必填 |
+| `-auth, --authToken` | 身份验证令牌 | 必填 |
+| `-cdomain, --customDomains` | 自定义域名 | 可选 |
+
+**使用场景：**
+
+- 本地开发时，需要让远程客户端访问本地服务
+- 微信小程序开发，需要 HTTPS 域名进行调试
+- 临时分享本地服务给团队成员测试
+- 内网穿透，访问内网服务
+
+#### 服务端配置
+
+1. 下载 FRP 服务端对应系统版本：[FRP 下载地址](https://github.com/fatedier/frp/releases)
+
+使用命令 uname -m 查看处理器架构。 如果是x86_64 即可选择amd64，若是aarch64 则选择arm64
+
+```
+wget https://github.com/fatedier/frp/releases/download/v0.45.0/frp_0.45.0_linux_arm64.tar.gz
+```
+
+2. 解压并配置 `frps.ini` 文件
+
+```
+tar -zxvf frp_0.45.0_linux_arm64.tar.gz
+cd frp_0.45.0_linux_arm64
+```
+
+配置文件 frps.ini
+
+```
+[common]
+bind_port = 39998
+vhost_http_port = 39427
+
+[web]
+type = http
+custom_domains = frp.example.com
+auth_token = your_token
+```
+
+3. 后台运行,开机启动
+
+```
+vim /etc/systemd/system/frps.service
+```
+```
+[Unit]
+# 服务名称，可自定义
+Description = frp server
+After = network.target syslog.target
+Wants = network.target
+[Service]
+Type = simple
+# 启动frps的命令，需修改为您的frps的安装路径
+ExecStart = /path/to/frps -c /path/to/frps.ini
+[Install]
+WantedBy = multi-user.target
+```
+```
+# 启动frp
+systemctl start frps
+# 停止frp
+systemctl stop frps
+# 重启frp
+systemctl restart frps
+# 查看frp状态
+systemctl status frps
+# 开机自启
+systemctl enable frps
+```
+
+4. nginx 反向代理使用80端口（可配置 https）
+
+```
+server {
+    listen 80; 
+    server_name test.undsky.com;
+
+    location / { 
+        proxy_pass http://127.0.0.1:39427;
+        proxy_set_header    Host            $host:80;
+        proxy_set_header    X-Real-IP       $remote_addr;
+        proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_hide_header   X-Powered-By;
+        proxy_set_header Upgrade $http_upgrade;  # WebSocket
+        proxy_set_header Connection "upgrade";
+    } 
+}
+```
+
+---
+
 ## 常见问题
 
 ### 1. 为什么要生成 Service 代码？
@@ -535,56 +595,16 @@ $ psy mapper -w false
 理论上支持所有通过插件形式集成到 Egg.js 的数据库，如：
 - MySQL（ruoyi-eggjs-mysql）
 - SQLite（ruoyi-eggjs-sqlite）
-- PostgreSQL（自定义插件）
-- MongoDB（自定义插件）
+- PostgreSQL（ruoyi-eggjs-pgsql）
 
 ## 完整示例项目
 
 参考 [ruoyi-eggjs](https://github.com/undsky/ruoyi-eggjs) 项目查看完整使用示例。
 
-## 相关链接
-
-- [ruoyi-eggjs](https://github.com/undsky/ruoyi-eggjs) - 主项目
-- [ruoyi-eggjs-mybatis](https://github.com/undsky/ruoyi-eggjs-mybatis) - MyBatis 插件
-- [ruoyi-eggjs-mysql](https://github.com/undsky/ruoyi-eggjs-mysql) - MySQL 插件
-- [ruoyi-eggjs-sqlite](https://github.com/undsky/ruoyi-eggjs-sqlite) - SQLite 插件
-
----
-
-## 关于 ruoyi-eggjs 项目
-
-本工具是 [ruoyi-eggjs](https://github.com/undsky/ruoyi-eggjs) 项目的核心开发工具。
-
-**ruoyi-eggjs** 是一个基于 Egg.js 的企业级后台管理系统，参照若依（RuoYi）架构设计，提供完善的权限管理、用户管理、系统监控等功能，是快速开发企业级应用的最佳选择。
-
-### 主要特性
-
-- 🎯 **完整的权限系统**：基于 RBAC 的权限控制，支持细粒度权限管理
-- 🚀 **开箱即用**：集成常用功能模块，快速启动项目开发
-- 🔧 **MyBatis 风格**：采用 XML 风格的 SQL 编写，熟悉的开发体验
-- 📦 **模块化设计**：松耦合的插件体系，按需使用
-- 🛡️ **企业级安全**：XSS 防护、SQL 注入防护、访问控制等
-- 📊 **系统监控**：在线用户、登录日志、操作日志、定时任务等
-
-### 项目地址
-
-- GitHub: [https://github.com/undsky/ruoyi-eggjs](https://github.com/undsky/ruoyi-eggjs)
-- Gitee: [https://gitee.com/undsky/ruoyi-eggjs](https://gitee.com/undsky/ruoyi-eggjs)
-
-### 相关插件
-
-- [ruoyi-eggjs-cache](https://github.com/undsky/ruoyi-eggjs-cache) - 缓存插件
-- [ruoyi-eggjs-mybatis](https://github.com/undsky/ruoyi-eggjs-mybatis) - MyBatis 集成
-- [ruoyi-eggjs-mysql](https://github.com/undsky/ruoyi-eggjs-mysql) - MySQL 连接
-- [ruoyi-eggjs-ratelimiter](https://github.com/undsky/ruoyi-eggjs-ratelimiter) - 限流插件
-- [ruoyi-eggjs-sqlite](https://github.com/undsky/ruoyi-eggjs-sqlite) - SQLite 支持
-- [ruoyi-eggjs-handlebars](https://github.com/undsky/ruoyi-eggjs-handlebars) - Handlebars 模板
-
 ### 联系方式
 
-- 📮 **Issues**: [提交问题或建议](https://github.com/undsky/ruoyi-eggjs/issues)
-- 🌐 **官网**: [https://www.undsky.com](https://www.undsky.com)
-- 💬 **讨论**: [GitHub Discussions](https://github.com/undsky/ruoyi-eggjs/discussions)
+- 🌐 **网站**: [https://www.undsky.com](https://www.undsky.com)
+- 📮 **Issues**: [提交问题或建议](https://github.com/undsky/ruoyi-eggjs-cli/issues)
 
 ### 贡献指南
 
