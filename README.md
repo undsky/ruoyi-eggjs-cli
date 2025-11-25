@@ -621,12 +621,12 @@ $ psy mapper -w false
 
 参考 [ruoyi-eggjs](https://github.com/undsky/ruoyi-eggjs) 项目查看完整使用示例。
 
-### 联系方式
+## 联系方式
 
 - 🌐 **网站**: [https://www.undsky.com](https://www.undsky.com)
 - 📮 **Issues**: [提交问题或建议](https://github.com/undsky/ruoyi-eggjs-cli/issues)
 
-### 贡献指南
+## 贡献指南
 
 欢迎提交 Issue 和 Pull Request！
 
