@@ -4,6 +4,10 @@
 
 基于 MyBatis XML 映射文件自动生成 Egg.js Service 层代码，减少重复劳动，提高开发效率。
 
+| 公众号                                       | 微信交流群                                                      |
+| -------------------------------------------- | --------------------------------------------------------------- |
+| ![公众号](https://cdn.undsky.com/img/gh.jpg) | ![微信交流群](https://cdn.undsky.com/img/doudouqun.jpg?v=2.0.1) |
+
 ## 目录
 
 - [特性](#特性)
@@ -19,10 +23,12 @@
 - [开发工作流](#开发工作流)
 - [FRP 内网穿透](#frp-内网穿透)
 - [常见问题](#常见问题)
-- [完整示例项目](#完整示例项目)
+- [完整项目](#完整项目)
+- [请我喝杯咖啡](#请我喝杯咖啡)
 - [联系方式](#联系方式)
 - [贡献指南](#贡献指南)
 - [License](#license)
+
 
 ## 特性
 
@@ -63,12 +69,12 @@ $ psy mapper [projectPath] [options]
 
 **参数说明：**
 
-| 参数 | 说明 | 默认值 |
-| --- | --- | --- |
-| `projectPath` | 项目路径 | 当前工作目录 |
-| `-m, --mapperDir` | Mapper XML 文件所在目录（相对路径） | `mapper` |
-| `-d, --defaultDatabse` | 默认数据库类型 | `mysql` |
-| `-w, --watch` | 是否启用自动监听模式 | `true` |
+| 参数                   | 说明                                | 默认值       |
+| ---------------------- | ----------------------------------- | ------------ |
+| `projectPath`          | 项目路径                            | 当前工作目录 |
+| `-m, --mapperDir`      | Mapper XML 文件所在目录（相对路径） | `mapper`     |
+| `-d, --defaultDatabse` | 默认数据库类型                      | `mysql`      |
+| `-w, --watch`          | 是否启用自动监听模式                | `true`       |
 
 ### 使用示例
 
@@ -142,7 +148,7 @@ CLI 会扫描指定目录下的所有 `.xml` 文件：
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="mapper/mysql/ruoyi/SysUserMapper.xml">
-    
+
     <select id="selectUserList">
         SELECT * FROM sys_user
         <where>
@@ -153,16 +159,16 @@ CLI 会扫描指定目录下的所有 `.xml` 文件：
         ORDER BY create_time DESC
         LIMIT ?, ?
     </select>
-    
+
     <select id="selectUserById">
         SELECT * FROM sys_user WHERE user_id = ?
     </select>
-    
+
     <insert id="insertUser">
         INSERT INTO sys_user (user_name, nick_name, email)
         VALUES (#{userName}, #{nickName}, #{email})
     </insert>
-    
+
     <update id="updateUser">
         UPDATE sys_user
         <set>
@@ -172,11 +178,11 @@ CLI 会扫描指定目录下的所有 `.xml` 文件：
         </set>
         WHERE user_id = ?
     </update>
-    
+
     <delete id="deleteUser">
         DELETE FROM sys_user WHERE user_id = ?
     </delete>
-    
+
 </mapper>
 ```
 
@@ -184,56 +190,61 @@ CLI 会扫描指定目录下的所有 `.xml` 文件：
 
 ```javascript
 // app/service/db/mysql/ruoyi/SysUserMapper.js
-const Service = require('egg').Service;
+const Service = require("egg").Service;
 
 class SysUserMapperService extends Service {
-    mapper(sqlid, values, params) {
-        return this.app.mapper('mapper/mysql/ruoyi/SysUserMapper.xml', sqlid, values, params)
-    }
+  mapper(sqlid, values, params) {
+    return this.app.mapper(
+      "mapper/mysql/ruoyi/SysUserMapper.xml",
+      sqlid,
+      values,
+      params,
+    );
+  }
 
-    db() {
-        return this.app.mysql.get('ruoyi');
-    }
+  db() {
+    return this.app.mysql.get("ruoyi");
+  }
 
-    selectUserListMapper(values, params) {
-        return this.mapper('selectUserList', values, params);
-    }
+  selectUserListMapper(values, params) {
+    return this.mapper("selectUserList", values, params);
+  }
 
-    async selectUserList(values, params) {
-        return await this.db().select(this.selectUserListMapper(values, params));
-    }
+  async selectUserList(values, params) {
+    return await this.db().select(this.selectUserListMapper(values, params));
+  }
 
-    selectUserByIdMapper(values, params) {
-        return this.mapper('selectUserById', values, params);
-    }
+  selectUserByIdMapper(values, params) {
+    return this.mapper("selectUserById", values, params);
+  }
 
-    async selectUserById(values, params) {
-        return await this.db().select(this.selectUserByIdMapper(values, params));
-    }
+  async selectUserById(values, params) {
+    return await this.db().select(this.selectUserByIdMapper(values, params));
+  }
 
-    insertUserMapper(values, params) {
-        return this.mapper('insertUser', values, params);
-    }
+  insertUserMapper(values, params) {
+    return this.mapper("insertUser", values, params);
+  }
 
-    async insertUser(values, params) {
-        return await this.db().insert(this.insertUserMapper(values, params));
-    }
+  async insertUser(values, params) {
+    return await this.db().insert(this.insertUserMapper(values, params));
+  }
 
-    updateUserMapper(values, params) {
-        return this.mapper('updateUser', values, params);
-    }
+  updateUserMapper(values, params) {
+    return this.mapper("updateUser", values, params);
+  }
 
-    async updateUser(values, params) {
-        return await this.db().update(this.updateUserMapper(values, params));
-    }
+  async updateUser(values, params) {
+    return await this.db().update(this.updateUserMapper(values, params));
+  }
 
-    deleteUserMapper(values, params) {
-        return this.mapper('deleteUser', values, params);
-    }
+  deleteUserMapper(values, params) {
+    return this.mapper("deleteUser", values, params);
+  }
 
-    async deleteUser(values, params) {
-        return await this.db().del(this.deleteUserMapper(values, params));
-    }
+  async deleteUser(values, params) {
+    return await this.db().del(this.deleteUserMapper(values, params));
+  }
 }
 
 module.exports = SysUserMapperService;
@@ -247,50 +258,58 @@ class UserController extends Controller {
   async list() {
     const { ctx } = this;
     const params = ctx.request.body;
-    
+
     // 调用生成的 Service
     const users = await ctx.service.db.mysql.ruoyi.sysUserMapper.selectUserList(
       ctx.helper.page(params),
-      params
+      params,
     );
-    
+
     ctx.body = { code: 200, data: users };
   }
 
   async info() {
     const { ctx } = this;
     const { userId } = ctx.params;
-    
-    const user = await ctx.service.db.mysql.ruoyi.sysUserMapper.selectUserById([userId]);
-    
+
+    const user = await ctx.service.db.mysql.ruoyi.sysUserMapper.selectUserById([
+      userId,
+    ]);
+
     ctx.body = { code: 200, data: user };
   }
 
   async add() {
     const { ctx } = this;
     const user = ctx.request.body;
-    
-    const insertId = await ctx.service.db.mysql.ruoyi.sysUserMapper.insertUser([], user);
-    
+
+    const insertId = await ctx.service.db.mysql.ruoyi.sysUserMapper.insertUser(
+      [],
+      user,
+    );
+
     ctx.body = { code: 200, data: insertId };
   }
 
   async update() {
     const { ctx } = this;
     const user = ctx.request.body;
-    
-    await ctx.service.db.mysql.ruoyi.sysUserMapper.updateUser([user.userId], user);
-    
-    ctx.body = { code: 200, message: '更新成功' };
+
+    await ctx.service.db.mysql.ruoyi.sysUserMapper.updateUser(
+      [user.userId],
+      user,
+    );
+
+    ctx.body = { code: 200, message: "更新成功" };
   }
 
   async remove() {
     const { ctx } = this;
     const { userId } = ctx.params;
-    
+
     await ctx.service.db.mysql.ruoyi.sysUserMapper.deleteUser([userId]);
-    
-    ctx.body = { code: 200, message: '删除成功' };
+
+    ctx.body = { code: 200, message: "删除成功" };
   }
 }
 ```
@@ -365,14 +384,14 @@ db() {
 
 CLI 会根据 XML 中的标签类型，自动调用对应的数据库方法：
 
-| XML 标签 | 数据库方法 | 返回值 |
-| --- | --- | --- |
-| `<select>` | `.select()` | 单条记录或 null，多条记录时返回记录数组 |
-| `<selects>` | `.selects()` | 记录数组 |
-| `<insert>` | `.insert()` | 插入的 ID |
-| `<update>` | `.update()` | 影响的行数 |
-| `<delete>` | `.del()` | 删除的行数 |
-| `<sql>` | `.run()` | 执行结果 |
+| XML 标签    | 数据库方法   | 返回值                                  |
+| ----------- | ------------ | --------------------------------------- |
+| `<select>`  | `.select()`  | 单条记录或 null，多条记录时返回记录数组 |
+| `<selects>` | `.selects()` | 记录数组                                |
+| `<insert>`  | `.insert()`  | 插入的 ID                               |
+| `<update>`  | `.update()`  | 影响的行数                              |
+| `<delete>`  | `.del()`     | 删除的行数                              |
+| `<sql>`     | `.run()`     | 执行结果                                |
 
 ## 命名规范
 
@@ -404,7 +423,7 @@ CLI 会根据 XML 中的标签类型，自动调用对应的数据库方法：
 // config/plugin.js
 exports.mybatis = {
   enable: true,
-  package: 'ruoyi-eggjs-mybatis',
+  package: "ruoyi-eggjs-mybatis",
 };
 ```
 
@@ -416,17 +435,17 @@ exports.mybatis = {
 // config/plugin.js
 exports.mysql = {
   enable: true,
-  package: 'ruoyi-eggjs-mysql',
+  package: "ruoyi-eggjs-mysql",
 };
 
 exports.sqlite = {
   enable: true,
-  package: 'ruoyi-eggjs-sqlite',
+  package: "ruoyi-eggjs-sqlite",
 };
 
 exports.pgsql = {
   enable: true,
-  package: 'ruoyi-eggjs-pgsql',
+  package: "ruoyi-eggjs-pgsql",
 };
 ```
 
@@ -435,11 +454,13 @@ exports.pgsql = {
 ### 推荐流程
 
 1. **启动监听模式**
+
    ```bash
    $ psy mapper
    ```
 
 2. **编写/修改 XML Mapper**
+
    ```xml
    <!-- 新增或修改 SQL -->
    <select id="selectNewData">...</select>
@@ -468,8 +489,6 @@ exports.pgsql = {
 
 运行 `npm run dev` 即可同时启动 Mapper 生成器和应用调试。
 
-
-
 ## FRP 内网穿透
 
 使用 FRP（内置版本 v0.45.0） 功能可以将本地服务暴露到公网，方便开发和测试：
@@ -484,13 +503,13 @@ $ rec frp 7001 -saddr frp.example.com -sport 39998 -auth your_token
 
 **参数说明：**
 
-| 参数 | 说明 | 是否必填 |
-| --- | --- | --- |
-| `localURL` | 本地服务地址，格式：`IP:PORT` 或 `PORT` | 必填 |
-| `-saddr, --serverAddr` | FRP 服务端地址 | 必填 |
-| `-sport, --serverPort` | FRP 服务端端口 | 必填 |
-| `-auth, --authToken` | 身份验证令牌 | 必填 |
-| `-cdomain, --customDomains` | 自定义域名 | 可选 |
+| 参数                        | 说明                                    | 是否必填 |
+| --------------------------- | --------------------------------------- | -------- |
+| `localURL`                  | 本地服务地址，格式：`IP:PORT` 或 `PORT` | 必填     |
+| `-saddr, --serverAddr`      | FRP 服务端地址                          | 必填     |
+| `-sport, --serverPort`      | FRP 服务端端口                          | 必填     |
+| `-auth, --authToken`        | 身份验证令牌                            | 必填     |
+| `-cdomain, --customDomains` | 自定义域名                              | 可选     |
 
 **使用场景：**
 
@@ -534,6 +553,7 @@ auth_token = your_token
 ```
 vim /etc/systemd/system/frps.service
 ```
+
 ```
 [Unit]
 # 服务名称，可自定义
@@ -547,6 +567,7 @@ ExecStart = /path/to/frps -c /path/to/frps.ini
 [Install]
 WantedBy = multi-user.target
 ```
+
 ```
 # 启动frp
 systemctl start frps
@@ -564,10 +585,10 @@ systemctl enable frps
 
 ```
 server {
-    listen 80; 
+    listen 80;
     server_name test.undsky.com;
 
-    location / { 
+    location / {
         proxy_pass http://127.0.0.1:39427;
         proxy_set_header    Host            $host:80;
         proxy_set_header    X-Real-IP       $remote_addr;
@@ -575,7 +596,7 @@ server {
         proxy_hide_header   X-Powered-By;
         proxy_set_header Upgrade $http_upgrade;  # WebSocket
         proxy_set_header Connection "upgrade";
-    } 
+    }
 }
 ```
 
@@ -593,6 +614,7 @@ server {
 ### 2. 可以自定义生成的代码吗？
 
 目前不支持自定义模板。如需特殊逻辑，建议：
+
 - 在生成的 Service 基础上扩展
 - 或创建新的 Service 类继承生成的类
 
@@ -613,13 +635,20 @@ $ psy mapper -w false
 ### 6. 支持哪些数据库？
 
 理论上支持所有通过插件形式集成到 Egg.js 的数据库，如：
+
 - MySQL（ruoyi-eggjs-mysql）
 - SQLite（ruoyi-eggjs-sqlite）
 - PostgreSQL（ruoyi-eggjs-pgsql）
 
-## 完整示例项目
+## 完整项目
 
 参考 [ruoyi-eggjs](https://github.com/undsky/ruoyi-eggjs) 项目查看完整使用示例。
+
+## 请我喝杯咖啡
+
+如果项目对你有帮助，可以请我喝杯咖啡 ☕️
+
+<img src="https://cdn.undsky.com/img/weixin10.jpg" max-width="300" height="500" /> <img src="https://cdn.undsky.com/img/zhifubao10.jpg" max-width="300" height="500" />
 
 ## 联系方式
 
