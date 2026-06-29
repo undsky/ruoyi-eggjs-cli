@@ -1,6 +1,6 @@
 # ruoyi-eggjs-cli
 
-> Egg.js MyBatis 风格的 Service 代码生成器，附带内网穿透功能
+> Egg.js MyBatis 风格的 Service 代码生成器
 
 基于 MyBatis XML 映射文件自动生成 Egg.js Service 层代码，减少重复劳动，提高开发效率。
 
@@ -21,7 +21,6 @@
 - [命名规范](#命名规范)
 - [配置要求](#配置要求)
 - [开发工作流](#开发工作流)
-- [FRP 内网穿透](#frp-内网穿透)
 - [常见问题](#常见问题)
 - [完整项目](#完整项目)
 - [请我喝杯咖啡](#请我喝杯咖啡)
@@ -39,7 +38,6 @@
 - ✅ 自动生成符合命名规范的方法（驼峰命名）
 - ✅ 智能识别 SQL 类型（select、selects、insert、update、delete）
 - ✅ 生成进度可视化显示
-- ✅ 附带内网穿透功能（FRP）
 
 ## 安装
 
@@ -488,119 +486,6 @@ exports.pgsql = {
 ```
 
 运行 `npm run dev` 即可同时启动 Mapper 生成器和应用调试。
-
-## FRP 内网穿透
-
-使用 FRP（内置版本 v0.45.0） 功能可以将本地服务暴露到公网，方便开发和测试：
-
-```bash
-# 完整示例（所有参数必填）
-$ rec frp 127.0.0.1:7001 -saddr frp.example.com -sport 39998 -auth your_token
-
-# 指定本地端口（IP 默认为 127.0.0.1）
-$ rec frp 7001 -saddr frp.example.com -sport 39998 -auth your_token
-```
-
-**参数说明：**
-
-| 参数                        | 说明                                    | 是否必填 |
-| --------------------------- | --------------------------------------- | -------- |
-| `localURL`                  | 本地服务地址，格式：`IP:PORT` 或 `PORT` | 必填     |
-| `-saddr, --serverAddr`      | FRP 服务端地址                          | 必填     |
-| `-sport, --serverPort`      | FRP 服务端端口                          | 必填     |
-| `-auth, --authToken`        | 身份验证令牌                            | 必填     |
-| `-cdomain, --customDomains` | 自定义域名                              | 可选     |
-
-**使用场景：**
-
-- 本地开发时，需要让远程客户端访问本地服务
-- 微信小程序开发，需要 HTTPS 域名进行调试
-- 临时分享本地服务给团队成员测试
-- 内网穿透，访问内网服务
-
-#### 服务端配置
-
-1. 下载 FRP 服务端对应系统版本：[FRP 下载地址](https://github.com/fatedier/frp/releases)
-
-使用命令 uname -m 查看处理器架构。 如果是x86_64 即可选择amd64，若是aarch64 则选择arm64
-
-```
-wget https://github.com/fatedier/frp/releases/download/v0.45.0/frp_0.45.0_linux_arm64.tar.gz
-```
-
-2. 解压并配置 `frps.ini` 文件
-
-```
-tar -zxvf frp_0.45.0_linux_arm64.tar.gz
-cd frp_0.45.0_linux_arm64
-```
-
-配置文件 frps.ini
-
-```
-[common]
-bind_port = 39998
-vhost_http_port = 39427
-
-[web]
-type = http
-custom_domains = frp.example.com
-auth_token = your_token
-```
-
-3. 后台运行,开机启动
-
-```
-vim /etc/systemd/system/frps.service
-```
-
-```
-[Unit]
-# 服务名称，可自定义
-Description = frp server
-After = network.target syslog.target
-Wants = network.target
-[Service]
-Type = simple
-# 启动frps的命令，需修改为您的frps的安装路径
-ExecStart = /path/to/frps -c /path/to/frps.ini
-[Install]
-WantedBy = multi-user.target
-```
-
-```
-# 启动frp
-systemctl start frps
-# 停止frp
-systemctl stop frps
-# 重启frp
-systemctl restart frps
-# 查看frp状态
-systemctl status frps
-# 开机自启
-systemctl enable frps
-```
-
-4. nginx 反向代理使用80端口（可配置 https）
-
-```
-server {
-    listen 80;
-    server_name test.undsky.com;
-
-    location / {
-        proxy_pass http://127.0.0.1:39427;
-        proxy_set_header    Host            $host:80;
-        proxy_set_header    X-Real-IP       $remote_addr;
-        proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_hide_header   X-Powered-By;
-        proxy_set_header Upgrade $http_upgrade;  # WebSocket
-        proxy_set_header Connection "upgrade";
-    }
-}
-```
-
----
 
 ## 常见问题
 
